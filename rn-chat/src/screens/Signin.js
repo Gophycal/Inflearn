@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { ThemeContext } from 'styled-components/native';
 import styled from 'styled-components/native';
-import { Button, Image } from '../components';
+import { Button, Image, Input } from '../components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Container = styled.View`
@@ -14,11 +14,6 @@ const Container = styled.View`
   padding-bottom: ${({ insets: { bottom } }) => bottom}px;
 `;
 
-const StyledText = styled.Text`
-  font-size: 30px;
-  color: #111111;
-`;
-
 const LOGO =
   'https://firebasestorage.googleapis.com/v0/b/rn-chat-a21c9.appspot.com/o/logo_optimization.png?alt=media';
 
@@ -26,11 +21,36 @@ const Signin = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const theme = useContext(ThemeContext);
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const refPassword = useRef(null);
+
+  const _handleSigninBtnPress = () => {
+    console.log('signin');
+  };
+
   return (
     <Container insets={insets}>
       <Image url={LOGO} />
-      <StyledText>Signin</StyledText>
-      <Button title="Sign up" onPress={() => console.log('signin')} />
+      <Input
+        label="Email"
+        placeholder="Email"
+        returnKeyType="next"
+        value={email}
+        onChangeText={setEmail}
+        onSubmitEditing={() => refPassword.current.focus()}
+      />
+      <Input
+        ref={refPassword}
+        label="Password"
+        placeholder="Password"
+        returnKeyType="done"
+        value={password}
+        onChangeText={setPassword}
+        isPassword={true}
+        onSubmitEditing={_handleSigninBtnPress}
+      />
+      <Button title="Sign in" onPress={_handleSigninBtnPress} />
       <Button
         title="or sign up"
         onPress={() => navigation.navigate('Signup')}
