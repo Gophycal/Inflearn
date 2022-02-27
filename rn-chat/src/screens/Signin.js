@@ -4,6 +4,8 @@ import styled from 'styled-components/native';
 import { Button, Image, Input } from '../components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { signin } from '../firebase';
+import { Alert } from 'react-native';
 
 const Container = styled.View`
   flex: 1;
@@ -26,8 +28,13 @@ const Signin = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const refPassword = useRef(null);
 
-  const _handleSigninBtnPress = () => {
-    console.log('signin');
+  const _handleSigninBtnPress = async () => {
+    try {
+      const user = await signin({ email, password });
+      navigation.navigate('Profile', { user });
+    } catch (e) {
+      Alert.alert('Signin Error', e.message);
+    }
   };
 
   return (
