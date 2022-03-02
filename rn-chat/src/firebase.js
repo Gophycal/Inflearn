@@ -1,43 +1,44 @@
-import * as firebase from 'firebase';
+import { initializeApp } from 'firebase/app';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth';
+// import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import config from '../firebase.json';
 
-const app = firebase.initializeApp(config);
+const app = initializeApp(config);
 
-const Auth = app.auth();
+const auth = getAuth(app);
 
 export const signin = async ({ email, password }) => {
-  const { user } = await Auth.signInWithEmailAndPassword(Auth, email, password);
+  const { user } = await signInWithEmailAndPassword(auth, email, password);
   return user;
 };
+
 const uploadImage = async (uri) => {
-  if (uri.startWith('https')) {
+  if (uri.startsWith('https')) {
     return uri;
   }
 
-  const blob = await new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-      resolve(xhr.response);
-    };
-    xhr.onerror = function () {
-      reject(new TypeError('Network request failed'));
-    };
-    xhr.reponseType = 'blob';
-    xhr.open('GET', uri, true);
-    xhr.send(null);
+  const response = await fetch(uri);
+  const blob = await response.blob();
+
+  const { uid } = auth.currentUser;
+  const storage = getStorage(app);
+  const storageRef = ref(storage, `/profile/${uid}/photo.png`);
+  await uploadBytes(storageRef, blob, {
+    contentType: 'image/png',
   });
 
-  const user = Auth;
-  const ref = app.storage().ref(`/profile/${user.uid}/photo.png`);
-  const snapshot = await ref.put(blob, { contentType: 'image/png' });
-  blob.close();
-
-  return await snapshot.ref.getDownloadURL();
+  return await getDownloadURL(storageRef);
 };
 
 export const signup = async ({ name, email, password, photo }) => {
-  const { user } = await auth().createUserWithEmailAndPassword(email, password);
+  const { user } = await createUserWithEmailAndPassword(auth, email, password);
   const photoURL = await uploadImage(photo);
-  await user.updateProfile({ displayName: name, photoURL });
+  await updateProfile(auth.currentUser, { displayName: name, photoURL });
   return user;
 };

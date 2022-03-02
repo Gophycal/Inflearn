@@ -4,7 +4,6 @@ import { Button, Image, Input } from '../components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { signup } from '../firebase';
 import { Alert } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
 
 const Container = styled.View`
   flex: 1;
@@ -17,7 +16,7 @@ const Container = styled.View`
 const DEFAULT_PHOTO =
   'https://firebasestorage.googleapis.com/v0/b/rn-chat-a21c9.appspot.com/o/person.png?alt=media';
 
-const Signup = () => {
+const Signup = ({ navigation }) => {
   const [photo, setPhoto] = useState(DEFAULT_PHOTO);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
