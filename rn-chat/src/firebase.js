@@ -8,6 +8,7 @@ import {
 // import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import config from '../firebase.json';
+// import Auth from './navigations/Auth';
 
 const app = initializeApp(config);
 
@@ -41,4 +42,15 @@ export const signup = async ({ name, email, password, photo }) => {
   const photoURL = await uploadImage(photo);
   await updateProfile(auth.currentUser, { displayName: name, photoURL });
   return user;
+};
+
+export const getCurrentUser = () => {
+  const { uid, displayName, email, photoURL } = auth.currentUser;
+  return { uid, name: displayName, email, photo: photoURL };
+};
+
+export const updateUserInfo = async (photo) => {
+  const photoURL = await uploadImage(photo);
+  await updateProfile(auth.currentUser, { photoURL });
+  return photoURL;
 };
