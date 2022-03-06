@@ -2,9 +2,11 @@ import React, { useContext, useState } from 'react';
 import { UserContext } from '../contexts';
 import styled from 'styled-components/native';
 import { Button, Image, Input } from '../components';
-import { getCurrentUser, updateUserInfo } from '../firebase';
+import { getCurrentUser, updateUserInfo, signout } from '../firebase';
 import { Alert } from 'react-native-web';
 import { ProgressContext } from '../contexts';
+import { ThemeContext } from 'styled-components/native';
+import { signOut } from '@firebase/auth';
 
 const Container = styled.View`
   flex: 1;
@@ -17,6 +19,7 @@ const Container = styled.View`
 const Profile = () => {
   const { spinner } = useContext(ProgressContext);
   const { setUser } = useContext(UserContext);
+  const theme = useContext(ThemeContext);
   const user = getCurrentUser();
 
   const [photo, setPhoto] = useState(user.photo);
@@ -38,7 +41,20 @@ const Profile = () => {
       <Image showButton url={photo} onChangePhoto={_handlePhotoChange} />
       <Input label="Name" value={user.name} disabled />
       <Input label="Email" value={user.email} disabled />
-      <Button title="Sign out" onPress={() => setUser({})} />
+      <Button
+        title="Sign out"
+        onPress={async () => {
+          try {
+            spinner.start();
+            await signOut();
+          } catch (e) {
+          } finally {
+            setUser({});
+            spinner.stop();
+          }
+        }}
+        containerStyle={{ backgroundColor: theme.btnSignout }}
+      />
     </Container>
   );
 };

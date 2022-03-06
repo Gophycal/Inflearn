@@ -23,6 +23,15 @@ const Home = ({ navigation, route }) => {
     const screenName = getFocusedRouteNameFromRoute(route) || 'List';
     navigation.setOptions({
       headerTitle: screenName,
+      headerRight: () =>
+        screenName === 'List' && (
+          <MaterialIcons
+            name="add"
+            size={26}
+            style={{ margin: 10 }}
+            onPress={() => navigation.navigate('ChannelCreation')}
+          />
+        ),
     });
   });
   return (

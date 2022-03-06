@@ -4,8 +4,9 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
+  signOut,
 } from 'firebase/auth';
-// import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import config from '../firebase.json';
 // import Auth from './navigations/Auth';
@@ -53,4 +54,30 @@ export const updateUserInfo = async (photo) => {
   const photoURL = await uploadImage(photo);
   await updateProfile(auth.currentUser, { photoURL });
   return photoURL;
+};
+
+export const signout = async () => {
+  await signOut(auth);
+  return {};
+};
+
+const db = getFirestore(app);
+
+export const createChannel = async ({ title, desc }) => {
+  const channelCollection = collection(db, 'channels');
+  const newChannelRef = doc(channelCollection);
+  const id = newChannelRef.id;
+  const newChannel = {
+    id,
+    title,
+    description: desc,
+    createdAt: Date.now(),
+  };
+  await setDoc(newChannelRef, newChannel);
+  return id;
+};
+
+export const createMessage = async ({ channelId, message }) => {
+  const docRef = doc(db, `channels/${channelId}/messages`, message._id);
+  await setDoc(docRef, { ...message, createdAt: Date.now() });
 };

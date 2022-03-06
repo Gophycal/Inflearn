@@ -16,6 +16,7 @@ export const theme = {
   btnBackground: Colors.main,
   btnTitle: Colors.white,
   btnTextLink: Colors.main,
+  btnSignout: Colors.red,
 
   // Image
   imgBackground: Colors.grey_0,
@@ -36,4 +37,10 @@ export const theme = {
   // Tab
   tabBtnActive: Colors.main,
   tabBtnInactive: Colors.grey_1,
+
+  // List - Item
+  itemBorder: Colors.grey_0,
+  itemTime: Colors.grey_1,
+  itemDesc: Colors.grey_1,
+  itemIcon: Colors.text,
 };

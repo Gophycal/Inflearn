@@ -4,6 +4,7 @@ import { ThemeProvider } from 'styled-components/native';
 import { theme } from './theme';
 import Navigation from './navigations';
 import { UserProvider, ProgressProvider } from './contexts';
+import 'react-native-gesture-handler';
 
 const App = () => {
   return (
