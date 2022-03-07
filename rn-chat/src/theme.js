@@ -43,4 +43,8 @@ export const theme = {
   itemTime: Colors.grey_1,
   itemDesc: Colors.grey_1,
   itemIcon: Colors.text,
+
+  // Chat
+  sendBtnActive: Colors.main,
+  sendBtnInactive: Colors.grey_1,
 };

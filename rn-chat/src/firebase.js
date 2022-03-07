@@ -9,7 +9,6 @@ import {
 import { getFirestore, collection, doc, setDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import config from '../firebase.json';
-// import Auth from './navigations/Auth';
 
 const app = initializeApp(config);
 
