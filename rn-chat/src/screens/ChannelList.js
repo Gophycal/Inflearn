@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import styled from 'styled-components/native';
 import { MaterialIcons } from '@expo/vector-icons';
+import moment from 'moment';
+import { app } from '../firebase';
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+} from 'firebase/firestore';
 
-const channels = [];
-for (let i = 0; i < 1000; i++) {
-  channels.push({
-    id: i,
-    title: `title: ${i}`,
-    description: `desc: ${i}`,
-    createdAt: i,
-  });
-}
+const getDateOrTime = (ts) => {
+  const now = moment().startOf('day');
+  const target = moment(ts).startOf('day');
+  return moment(ts).format(now.diff(target, 'day') > 0 ? 'MM/DD' : 'HH:mm');
+};
 
 const ItemContainer = styled.TouchableOpacity`
   flex-direction: row;
@@ -54,12 +59,12 @@ const Item = React.memo(
     console.log(id);
 
     return (
-      <ItemContainer>
+      <ItemContainer onPress={() => onPress({ id, title })}>
         <ItemTextContainer>
           <ItemTitle>{title}</ItemTitle>
           <ItemDesc>{description}</ItemDesc>
         </ItemTextContainer>
-        <ItemTime>{createdAt}</ItemTime>
+        <ItemTime>{getDateOrTime(createdAt)}</ItemTime>
         <ItemIcon />
       </ItemContainer>
     );
@@ -71,16 +76,35 @@ const Container = styled.View`
   background-color: ${({ theme }) => theme.background};
 `;
 
-const StyledText = styled.Text`
-  font-size: 30px;
-`;
-
 const ChannelList = ({ navigation }) => {
+  const [channels, setChannels] = useState([]);
+  const db = getFirestore(app);
+
+  useEffect(() => {
+    const collectionQuery = query(
+      collection(db, 'channels'),
+      orderBy('createdAt', 'desc')
+    );
+    const unsubscribe = onSnapshot(collectionQuery, (snapshot) => {
+      const list = [];
+      snapshot.forEach((doc) => {
+        list.push(doc.data());
+      });
+      setChannels(list);
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
     <Container>
       <FlatList
         data={channels}
-        renderItem={({ item }) => <Item item={item} />}
+        renderItem={({ item }) => (
+          <Item
+            item={item}
+            onPress={(params) => navigation.navigate('Channel', params)}
+          />
+        )}
         keyExtractor={(item) => item['id'].toString()}
         windowSize={5}
       />
